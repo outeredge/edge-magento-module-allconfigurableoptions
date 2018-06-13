@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: limosh
- * Date: 05/06/2018
- * Time: 12:32
- */
 
 namespace Outeredge\ConfigProduct\Plugin\Model\ResourceModel\Attribute;
 
