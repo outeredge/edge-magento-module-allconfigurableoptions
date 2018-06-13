@@ -1,7 +1,7 @@
 {
     "name": "outeredge/edge-magento-module-allconfigurableoptions",
-    "type": "magento-module",
-    "description": "All Configurable Options Module for Magento by outer/edge",
+    "type": "magento2-module",
+    "description": "All Configurable Options Module for Magento 2 by outer/edge",
     "license": "MIT",
     "authors": [
         {
@@ -11,12 +11,5 @@
     ],
     "require": {
         "magento-hackathon/magento-composer-installer": "*"
-    },
-    "extra": {
-        "map": [
-            ["app/code/local/Edge/AllConfigurableOptions", "app/code/local/Edge/AllConfigurableOptions"],
-            ["app/etc/modules/Edge_AllConfigurableOptions.xml", "app/etc/modules/Edge_AllConfigurableOptions.xml"],
-            ["skin/frontend/base/default/edge/allconfigurableoptions", "skin/frontend/base/default/edge/allconfigurableoptions"]
-        ]
     }
 }
