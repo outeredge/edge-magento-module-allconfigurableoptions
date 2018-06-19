@@ -1,6 +1,6 @@
 <?php
 
-namespace Outeredge\ConfigProduct\Plugin\Model\ResourceModel\Attribute;
+namespace OuterEdge\ConfigProduct\Plugin\Model\ResourceModel\Attribute;
 
 use Magento\CatalogInventory\Api\StockConfigurationInterface;
 use \Magento\ConfigurableProduct\Plugin\Model\ResourceModel\Attribute\InStockOptionSelectBuilder as MageInStockOptionSelectBuilder;
@@ -10,17 +10,17 @@ use Magento\Framework\DB\Select;
 
 class InStockOptionSelectBuilder extends MageInStockOptionSelectBuilder
 {
-
     /**
      * CatalogInventory Stock Status Resource Model.
      *
      * @var Status
      */
     private $stockStatusResource;
-
+    /**
+     *
+     * @var Configuration
+     */
     private $stockConfiguration;
-
-
     /**
      * @param Status $stockStatusResource
      */
@@ -30,8 +30,6 @@ class InStockOptionSelectBuilder extends MageInStockOptionSelectBuilder
         $this->stockStatusResource = $stockStatusResource;
         $this->stockConfiguration = $stockConfiguration;
     }
-
-
     /**
      * Add stock status filter to select.
      *
@@ -56,5 +54,4 @@ class InStockOptionSelectBuilder extends MageInStockOptionSelectBuilder
         }
         return $select;
     }
-
 }

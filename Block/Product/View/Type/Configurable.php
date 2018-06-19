@@ -1,7 +1,6 @@
 <?php
 
-namespace Outeredge\ConfigProduct\Block\Product\View\Type;
-
+namespace OuterEdge\ConfigProduct\Block\Product\View\Type;
 
 use Magento\Swatches\Block\Product\Renderer\Configurable as SwatchConfigurable;
 use Magento\Catalog\Block\Product\Context;

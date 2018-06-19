@@ -1,7 +1,6 @@
 <?php
 
-namespace Outeredge\ConfigProduct\Helper;
-
+namespace OuterEdge\ConfigProduct\Helper;
 
 class Data extends \Magento\ConfigurableProduct\Helper\Data
 {
