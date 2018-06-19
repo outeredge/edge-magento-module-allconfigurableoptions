@@ -1,7 +1,7 @@
 {
     "name": "outeredge/edge-magento-module-allconfigurableoptions",
     "type": "magento2-module",
-    "description": "All Configurable Options Module for Magento 2 by outer/edge",
+    "description": "All Configurable Options on config product: Module for Magento 2 by outer/edge",
     "license": "MIT",
     "authors": [
         {
