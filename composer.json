@@ -9,9 +9,6 @@
             "email": "support@outeredgeuk.com"
         }
     ],
-    "require": {
-        "php": "7.0.2|7.0.4|~7.0.6|~7.1.0"
-    },
     "autoload": {
         "files": ["registration.php"],
         "psr-4": {
