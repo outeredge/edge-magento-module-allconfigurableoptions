@@ -6,6 +6,7 @@ use Magento\Swatches\Block\Product\Renderer\Configurable as SwatchConfigurable;
 use Magento\Catalog\Block\Product\Context;
 use Magento\Framework\Stdlib\ArrayUtils;
 use Magento\Framework\Json\EncoderInterface;
+use Magento\Framework\Json\DecoderInterface;
 use Magento\ConfigurableProduct\Helper\Data;
 use Magento\Catalog\Helper\Product as CatalogProduct;
 use Magento\Customer\Helper\Session\CurrentCustomer;
@@ -13,12 +14,15 @@ use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\ConfigurableProduct\Model\ConfigurableAttributeData;
 use Magento\Swatches\Helper\Data as SwatchData;
 use Magento\Swatches\Helper\Media;
-use Magento\Swatches\Model\Swatch;
 use Magento\Swatches\Model\SwatchAttributesProvider;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Locale\Format;
 use Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory;
 
+/**
+ * Class Configurable
+ * @package OuterEdge\ConfigProduct\Block\Product\View\Type
+ */
 class Configurable extends SwatchConfigurable
 {
     /**
@@ -32,14 +36,28 @@ class Configurable extends SwatchConfigurable
     private $localeFormat;
 
     /**
+     * @var jsonDecoder interface
+     */
+    protected $jsonDecoder;
+
+    /**
      * @var StockRepository
      */
     protected $_stockRepository;
+    /**
+     * @var Context
+     */
+    private $context;
+    /**
+     * @var StockItemInterfaceFactory
+     */
+    private $stockItemInterfaceFactory;
 
     /**
      * @param Context $context
      * @param ArrayUtils $arrayUtils
      * @param EncoderInterface $jsonEncoder
+     * @param DecoderInterface $jsonDecoder
      * @param Data $helper
      * @param CatalogProduct $catalogProduct
      * @param CurrentCustomer $currentCustomer
@@ -49,12 +67,15 @@ class Configurable extends SwatchConfigurable
      * @param Media $swatchMediaHelper
      * @param array $data other data
      * @param SwatchAttributesProvider $swatchAttributesProvider
+     * @param Format|null $localeFormat
+     * @param StockItemInterfaceFactory $stockItemInterfaceFactory
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         Context $context,
         ArrayUtils $arrayUtils,
         EncoderInterface $jsonEncoder,
+        DecoderInterface $jsonDecoder,
         Data $helper,
         CatalogProduct $catalogProduct,
         CurrentCustomer $currentCustomer,
@@ -73,6 +94,7 @@ class Configurable extends SwatchConfigurable
         $this->swatchAttributesProvider = $swatchAttributesProvider
             ?: ObjectManager::getInstance()->get(SwatchAttributesProvider::class);
         $this->localeFormat = $localeFormat ?: ObjectManager::getInstance()->get(Format::class);
+        $this->jsonDecoder =$jsonDecoder;
 
         parent::__construct(
             $context,
@@ -87,6 +109,8 @@ class Configurable extends SwatchConfigurable
             $swatchMediaHelper,
             $data
         );
+        $this->context = $context;
+        $this->stockItemInterfaceFactory = $stockItemInterfaceFactory;
     }
 
     /**
@@ -128,53 +152,18 @@ class Configurable extends SwatchConfigurable
         return $stock;
     }
 
-
     /**
-     * Composes configuration for js
+     * Extend the configuration for js to add stock values.
      *
      * @return string
      */
     public function getJsonConfig()
     {
-        $store = $this->getCurrentStore();
+        $config = $this->jsonDecoder->decode(parent::getJsonConfig());
         $currentProduct = $this->getProduct();
-
-        $regularPrice = $currentProduct->getPriceInfo()->getPrice('regular_price');
-        $finalPrice = $currentProduct->getPriceInfo()->getPrice('final_price');
-
         $options = $this->helper->getOptions($currentProduct, $this->getAllowProducts(),$this->getProductStock());
-        $attributesData = $this->configurableAttributeData->getAttributesData($currentProduct, $options);
-
-        $config = [
-            'attributes' => $attributesData['attributes'],
-            'template' => str_replace('%s', '<%- data.price %>', $store->getCurrentCurrency()->getOutputFormat()),
-            'currencyFormat' => $store->getCurrentCurrency()->getOutputFormat(),
-            'optionPrices' => $this->getOptionPrices(),
-            'priceFormat' => $this->localeFormat->getPriceFormat(),
-            'prices' => [
-                'oldPrice' => [
-                    'amount' => $this->localeFormat->getNumber($regularPrice->getAmount()->getValue()),
-                ],
-                'basePrice' => [
-                    'amount' => $this->localeFormat->getNumber($finalPrice->getAmount()->getBaseAmount()),
-                ],
-                'finalPrice' => [
-                    'amount' => $this->localeFormat->getNumber($finalPrice->getAmount()->getValue()),
-                ],
-            ],
-            'productId' => $currentProduct->getId(),
-            'chooseText' => __('Choose an Option...'),
-            'images' => $this->getOptionImages(),
-            'index' => isset($options['index']) ? $options['index'] : [],
-            'stock' => isset($options['stock']) ? $options['stock'] : [],
-        ];
-
-        if ($currentProduct->hasPreconfiguredValues() && !empty($attributesData['defaultValues'])) {
-            $config['defaultValues'] = $attributesData['defaultValues'];
-        }
-
-        $config = array_merge($config, $this->_getAdditionalConfig());
-
+        //Adding stock details to the config product options.
+        $config['stock']=isset($options['stock']) ? $options['stock'] : [];
         return $this->jsonEncoder->encode($config);
     }
 
